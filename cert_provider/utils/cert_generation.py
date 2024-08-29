@@ -2,6 +2,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from loguru import logger
+from werkzeug.exceptions import NotFound
 
 CERTS: dict[str, list[bytes, bytes]] = {}
 
@@ -12,7 +13,7 @@ def get_certs_by_ip(
 ) -> list[bytes, bytes] | list[str, str]:
     certs = CERTS.get(ip)
     if not certs:
-        raise ValueError("Unexistent IP provided")
+        raise NotFound("Unexistent IP provided")
 
     if as_strings:
         return [cert.decode() for cert in certs]
