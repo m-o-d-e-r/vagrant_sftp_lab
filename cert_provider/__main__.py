@@ -2,6 +2,7 @@ from cert_provider.utils.cert_generation import generate_certs, get_certs_by_ip
 from cert_provider.utils.env_extractors import extract_servers_ip
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+from loguru import logger
 
 load_dotenv()  # take environment variables from .env.
 
@@ -18,7 +19,7 @@ def get_cert():
     try:
         user_json = request.get_json(force=True)
     except Exception as exc:
-        print(exc)
+        logger.error(exc)
         return jsonify(
             {
                 "error": "invalid JSON provided"
@@ -35,7 +36,7 @@ def get_cert():
     try:
         certs = get_certs_by_ip(user_json["ip"])
     except Exception as exc:
-        print(exc)
+        logger.error(exc)
         return jsonify(
             {
                 "error": str(exc)
