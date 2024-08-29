@@ -19,23 +19,27 @@ def get_certs_by_ip(
     return certs
 
 
-def generate_certs(ip_list: list[str]) -> None:
+def generate_keys_pare() -> list[bytes, bytes]:
     key = rsa.generate_private_key(
         backend=default_backend(),
         public_exponent=65537,
         key_size=2048
     )
 
+    private_key = key.private_bytes(
+        serialization.Encoding.PEM,
+        serialization.PrivateFormat.PKCS8,
+        serialization.NoEncryption()
+    )
+
+    public_key = key.public_key().public_bytes(
+        serialization.Encoding.OpenSSH,
+        serialization.PublicFormat.OpenSSH
+    )
+
+    return [private_key, public_key]
+
+
+def generate_certs(ip_list: list[str]) -> None:
     for ip in ip_list:
-        private_key = key.private_bytes(
-            serialization.Encoding.PEM,
-            serialization.PrivateFormat.PKCS8,
-            serialization.NoEncryption()
-        )
-
-        public_key = key.public_key().public_bytes(
-            serialization.Encoding.OpenSSH,
-            serialization.PublicFormat.OpenSSH
-        )
-
-        CERTS[ip] = [private_key, public_key]
+        CERTS[ip] = generate_keys_pare()
