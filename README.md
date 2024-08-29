@@ -24,5 +24,5 @@ Run Vagrantfile.
 vagrant up --provider=<your provider>
 ```
 
-[!IMPORTANT]
+> [!IMPORTANT]
 > `generic/ubuntu1804` used as an image for all VMs, there may be no such image available for your provider, pls change images accordingly.
