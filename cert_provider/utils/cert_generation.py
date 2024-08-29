@@ -1,6 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
+from loguru import logger
 
 CERTS: dict[str, list[bytes, bytes]] = {}
 
@@ -41,5 +42,10 @@ def generate_keys_pare() -> list[bytes, bytes]:
 
 
 def generate_certs(ip_list: list[str]) -> None:
+    logger.info("start generating ssh keys...")
+
     for ip in ip_list:
         CERTS[ip] = generate_keys_pare()
+        logger.info(f"ssh keys generated for {ip}")
+
+    logger.info("ssh keys generated successfully")

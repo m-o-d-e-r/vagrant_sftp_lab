@@ -1,11 +1,13 @@
 import sys
 from os import environ
 
+from loguru import logger
+
 
 def extract_servers_ip() -> list[str]:
     raw_server_list = environ.get("SFTP_SERVER_LIST", "")
 
-    print("SFTP_SERVER_LIST got from environments")
+    logger.info("SFTP_SERVER_LIST got from environments")
 
     server_list: list[str] = list(
         filter(
@@ -14,8 +16,8 @@ def extract_servers_ip() -> list[str]:
         )
     )
     if not server_list:
-        print("variable SFTP_SERVER_LIST should be provided")
+        logger.error("variable SFTP_SERVER_LIST should be provided")
         sys.exit(0)
 
-    print(server_list)
+    logger.info(f"ssh keys should be generated for {server_list}")
     return server_list
