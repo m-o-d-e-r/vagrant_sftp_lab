@@ -1,47 +1,33 @@
+from cert_provider.models.keys_models import KeysByIPModel
 from cert_provider.utils.cert_generation import generate_certs, get_certs_by_ip
 from cert_provider.utils.env_extractors import extract_servers_ip
+from cert_provider.utils.error_handler import handle_error
+from cert_provider.utils.requests import get_json
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from loguru import logger
+from werkzeug.exceptions import BadRequest
 
-load_dotenv()  # take environment variables from .env.
+load_dotenv()
 
 generate_certs(extract_servers_ip())
 
 app = Flask(__name__)
 
+app.register_error_handler(Exception, handle_error)
+
 
 @app.post("/certs")
 def get_cert():
-    # NOTE: this code will be refactored, i promise)
-    # It's just for test purposes
-
     try:
-        user_json = request.get_json(force=True)
+        user_json = KeysByIPModel(**get_json())
     except Exception as exc:
         logger.error(exc)
-        return jsonify(
-            {
-                "error": "invalid JSON provided"
-            }
-        )
+        raise BadRequest(
+            description=str(exc)
+        ) from exc
 
-    if not user_json.get("ip"):
-        return jsonify(
-            {
-                "error": "'ip' field was not provided"
-            }
-        )
-
-    try:
-        certs = get_certs_by_ip(user_json["ip"])
-    except Exception as exc:
-        logger.error(exc)
-        return jsonify(
-            {
-                "error": str(exc)
-            }
-        )
+    certs = get_certs_by_ip(user_json.ip)
 
     return jsonify(
         {
@@ -52,4 +38,4 @@ def get_cert():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
