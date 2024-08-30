@@ -1,11 +1,15 @@
 from os import environ
 from sys import exit as sys_exit
 
-import paramiko
 from dotenv import load_dotenv
 from loguru import logger
 from report_maker.config import config_obj
-from report_maker.utils import get_private_key_by_ip, receive_all_ips
+from report_maker.utils import (
+    connect_to_server,
+    execute_command,
+    get_private_key_by_ip,
+    receive_all_ips,
+)
 
 load_dotenv()
 
@@ -24,7 +28,7 @@ config_obj.CERT_PROVIDER_PORT = get_required_env_var("CERT_PROVIDER_PORT")
 
 SERVERS_TO_VISIT: list[str] = receive_all_ips()
 
-private_keys_dict: dict[str, bytes] = {}
+private_keys_dict: dict[str, str] = {}
 for server_ip in SERVERS_TO_VISIT:
     private_key = get_private_key_by_ip(server_ip)
 
@@ -34,5 +38,11 @@ for server_ip in SERVERS_TO_VISIT:
 
     private_keys_dict[server_ip] = private_key
 
-#client = paramiko.SSHClient()
-#client.load_host_keys
+
+for server_ip, private_key in private_keys_dict.items():
+    ssh_client = connect_to_server(server_ip, private_key)
+
+    execute_command(ssh_client, server_ip, "bash generate_raw_report.sh")
+    raw_report = execute_command(ssh_client, server_ip, "cat raw_report.json")
+
+    logger.info(f"Received raw report => {raw_report}")

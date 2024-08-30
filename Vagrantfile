@@ -32,6 +32,9 @@ Vagrant.configure("2") do |config|
       server.vm.provision "file", source: "./scripts/cron_files.sh", destination: "./cron_files.sh"
       server.vm.provision "shell", inline: "mv ./cron_files.sh /home/admin/cron_files.sh"
 
+      server.vm.provision "file", source: "./scripts/generate_raw_report.sh", destination: "./generate_raw_report.sh"
+      server.vm.provision "shell", inline: "mv ./generate_raw_report.sh /home/admin/generate_raw_report.sh"
+
       server.vm.provision "shell" do |s|
         other_ips = ip_list.reject { |vm_ip| vm_ip == ip_item }.join('\\n')
 
