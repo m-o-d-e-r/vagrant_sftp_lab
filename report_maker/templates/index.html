@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My mega report</title>
+</head>
+<body>
+    {% for server_receiver, server_senders_data in report_data.items() %}
+        <h1>Server: {{server_receiver}}</h1>
+        {% for server_sender, files_created in server_senders_data.items() %}
+            <li>{{server_sender}} - {{files_created}}</li>
+        {% endfor %}
+    {% endfor %}
+    <button style="margin-top: 20px;" onclick="window.location.reload();">Reload</button>
+</body>
+</html>

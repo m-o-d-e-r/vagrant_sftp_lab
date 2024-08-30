@@ -44,6 +44,20 @@ def get_private_key_by_ip(ip: str) -> bytes | None:
     return json_data["private_key"]
 
 
+def receive_all_privates_keys(servers_list: list[str]) -> dict[str, str]:
+    private_keys_dict: dict[str, str] = {}
+    for server_ip in servers_list:
+        private_key = get_private_key_by_ip(server_ip)
+
+        if not private_key:
+            logger.warning(f"Failed to receive private key for {server_ip}")
+            continue
+
+        private_keys_dict[server_ip] = private_key
+
+    return private_keys_dict
+
+
 def connect_to_server(host: str, private_key_str: str) -> paramiko.SSHClient:
     private_key_bytes = private_key_str.encode('utf-8')
     private_key = serialization.load_pem_private_key(
