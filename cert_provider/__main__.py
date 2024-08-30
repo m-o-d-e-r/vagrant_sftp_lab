@@ -1,5 +1,7 @@
+from os import environ
+
 from cert_provider.models.keys_models import KeysByIPModel
-from cert_provider.utils.cert_generation import generate_certs, get_certs_by_ip
+from cert_provider.utils.cert_generation import CERTS, generate_certs, get_certs_by_ip
 from cert_provider.utils.env_extractors import extract_servers_ip
 from cert_provider.utils.error_handler import handle_error
 from cert_provider.utils.requests import get_json
@@ -37,5 +39,18 @@ def get_cert():
     )
 
 
+@app.get("/all_ips")
+def get_all_ips():
+    return jsonify(
+        {
+            "all_ips": list(CERTS.keys())
+        }
+    )
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=8080,
+        debug=bool(environ.get("DEBUG_MODE", ""))
+    )
