@@ -45,4 +45,4 @@ for server_ip, private_key in private_keys_dict.items():
     execute_command(ssh_client, server_ip, "bash generate_raw_report.sh")
     raw_report = execute_command(ssh_client, server_ip, "cat raw_report.json")
 
-    logger.info(f"Received raw report => {raw_report}")
+    logger.info(f"Received raw report from {server_ip} => {raw_report}")
