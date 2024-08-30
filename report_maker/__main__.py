@@ -1,10 +1,11 @@
 from os import environ
 from sys import exit as sys_exit
 
-import requests
+import paramiko
 from dotenv import load_dotenv
 from loguru import logger
-from report_maker.utils import receive_all_ips
+from report_maker.config import config_obj
+from report_maker.utils import get_private_key_by_ip, receive_all_ips
 
 load_dotenv()
 
@@ -18,8 +19,20 @@ def get_required_env_var(env_var_name: str) -> str:
     return env_var_value
 
 
-CERT_PROVIDER_HOST = get_required_env_var("CERT_PROVIDER_HOST")
-CERT_PROVIDER_PORT = get_required_env_var("CERT_PROVIDER_PORT")
+config_obj.CERT_PROVIDER_HOST = get_required_env_var("CERT_PROVIDER_HOST")
+config_obj.CERT_PROVIDER_PORT = get_required_env_var("CERT_PROVIDER_PORT")
 
+SERVERS_TO_VISIT: list[str] = receive_all_ips()
 
-print(receive_all_ips(CERT_PROVIDER_HOST, CERT_PROVIDER_PORT))
+private_keys_dict: dict[str, bytes] = {}
+for server_ip in SERVERS_TO_VISIT:
+    private_key = get_private_key_by_ip(server_ip)
+
+    if not private_key:
+        logger.warning(f"Failed to receive private key for {server_ip}")
+        continue
+
+    private_keys_dict[server_ip] = private_key
+
+#client = paramiko.SSHClient()
+#client.load_host_keys
