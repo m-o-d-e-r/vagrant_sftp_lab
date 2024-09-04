@@ -12,11 +12,16 @@ func GetReport(response http.ResponseWriter, request *http.Request) {
 	reportData := make(map[string]map[string]int)
 
 	for ip, keysPair := range utils.GlobalConfig.HOSTS_KEY_PARES {
-		sshSession := utils.ConnectToHost(ip, keysPair.PrivateKey)
+		sshClient := utils.ConnectToHost(ip, keysPair.PrivateKey)
 
-		utils.ExecuteCommand(sshSession, "bash generate_raw_report.sh")
+		if sshClient == nil {
+			log.Printf("Failed to connect to %v", ip)
+			continue
+		}
 
-		commandOutput, err := utils.ExecuteCommand(sshSession, "cat raw_report.json")
+		utils.ExecuteCommand(sshClient, "bash generate_raw_report.sh")
+
+		commandOutput, err := utils.ExecuteCommand(sshClient, "cat raw_report.json")
 		if err != nil {
 			log.Printf("Error fetching report from %v: %v", ip, err)
 			continue
