@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My mega report</title>
+</head>
+<body>
+    {{ range $serverReceiver, $serverSendersData := .report_data }}
+        <h1>Server: {{ $serverReceiver }}</h1>
+        <ul>
+        {{ range $serverSender, $filesCreated := $serverSendersData }}
+            <li>{{ $serverSender }} - {{ $filesCreated }}</li>
+        {{ end }}
+        </ul>
+    {{ end }}
+    <button style="margin-top: 20px;" onclick="window.location.reload();">Reload</button>
+</body>
+</html>
