@@ -1,0 +1,22 @@
+FROM golang:1.22 AS build-stage
+
+WORKDIR /app
+
+COPY report_maker_go/go.* ./
+RUN go mod download
+
+COPY report_maker_go/ ./
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /report_make_go
+
+
+FROM alpine
+
+WORKDIR /app
+
+COPY --from=build-stage /report_make_go /app/report_make_go
+COPY --from=build-stage /app/templates /app/templates
+
+EXPOSE 8080
+
+CMD ["/app/report_make_go"]

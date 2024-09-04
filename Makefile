@@ -20,11 +20,14 @@ build_report_maker:
 run_report_maker_docker:
 	docker run --rm --network cert_provider_net --ip 192.10.0.3 report_maker
 
+build_report_maker_go:
+	docker build -f Dockerfile.report_maker_go -t report_maker_go .
+
+run_report_maker_go_docker:
+	docker run --rm --env-file .env --network host report_maker_go
+
 create_cert_provider_net:
 	docker network create --driver=bridge --subnet=192.10.0.0/16 cert_provider_net
 
 activate_env:
 	source .venv/bin/activate
-
-network:
-	docker network create cert_provider_net --subnet 192.10.0.0/16
