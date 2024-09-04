@@ -25,3 +25,6 @@ create_cert_provider_net:
 
 activate_env:
 	source .venv/bin/activate
+
+network:
+	docker network create cert_provider_net --subnet 192.10.0.0/16
